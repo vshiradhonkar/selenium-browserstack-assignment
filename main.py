@@ -3,19 +3,19 @@ from selenium.webdriver.common.by import By
 import os
 import requests
 import time
-from deep_translator import GoogleTranslator  # Using deep-translator for translation
+from deep_translator import GoogleTranslator
 import re
 import csv
 import unicodedata
 
-# Function to sanitize and normalize text (fix encoding issues)
+
 def sanitize_text(text):
-    # Normalize unicode characters (this will decompose accented characters and allow easier replacement)
+
     normalized_text = unicodedata.normalize('NFD', text)
     
-    # Replace problematic characters with their proper Unicode equivalents
+    # Replacing problematic characters
     replacements = {
-        '�': 'a',  # Common encoding issue for "á"
+        '�': 'a', 
         'í': 'i',
         'ó': 'o',
         'é': 'e',
@@ -30,15 +30,15 @@ def sanitize_text(text):
         'ô': 'o'
     }
 
-    # Manually replace problematic characters
+    # replacng blematic characters
     for wrong, correct in replacements.items():
         normalized_text = normalized_text.replace(wrong, correct)
 
     # Return the normalized, sanitized text
     return normalized_text
 
-# Initialize WebDriver
-driver = webdriver.Chrome()  # Replace with webdriver.Firefox() if using Firefox
+
+driver = webdriver.Chrome()  
 driver.get("https://elpais.com/")
 
 
@@ -68,21 +68,20 @@ translator = GoogleTranslator(source='es', target='en')
 #list store data
 articles_data = []
 
-#Extract,Translate
+#Extract,Translate here
 output_dir = "elpais_opinion_articles"
-os.makedirs(output_dir, exist_ok=True)  # Create output directory if it doesn't exist
+os.makedirs(output_dir, exist_ok=True)
 
 for idx, article in enumerate(articles, start=1):
     try:
         
-        title_element = article.find_element(By.TAG_NAME, "h2") # Extract title
+        title_element = article.find_element(By.TAG_NAME, "h2") # Extracting title
         title = title_element.text
         print(f"Article {idx} Title (Spanish): {title}")
 
-        # Sanitize normalize
         title = sanitize_text(title)
 
-        translated_title = translator.translate(title) # Translate title
+        translated_title = translator.translate(title) # Translating title
         print(f"Article {idx} Title (English): {translated_title}")
 
         # Extract the content (if available)
@@ -90,11 +89,11 @@ for idx, article in enumerate(articles, start=1):
         content = content_element.text if content_element else "No content available."
         print(f"Article {idx} Content: {content}")
 
-        # Sanitize and normalize the content text
+
         content = sanitize_text(content)
 
-        # Save the cover image (if available)
-        img_element = article.find_elements(By.TAG_NAME, "img")  # Use find_elements to avoid errors
+        # Saving the cover file
+        img_element = article.find_elements(By.TAG_NAME, "img")
         if img_element:
             img_url = img_element[0].get_attribute("src")
             img_path = os.path.join(output_dir, f"article_{idx}_cover.jpg")
@@ -119,28 +118,27 @@ for idx, article in enumerate(articles, start=1):
     except Exception as e:
         print(f"Error processing Article {idx}: {e}")
 
-# Step 4: Repeated Word Analysis (remove stopwords and count)
+#Repeated Word Analysis
 all_titles = [article['title_english'] for article in articles_data]
 word_counts = {}
 
-# List of common stopwords (you can expand this list)
+# List of common stopwords
 stopwords = set([
     "the", "and", "to", "a", "of", "in", "is", "for", "on", "with", "this", "at", "by", "as", "an", "it", "are", "that", "from", "but"
 ])
-# Count word frequency in all translated titles
+# Count word frequency
 for title in all_titles:
     words = re.findall(r'\w+', title.lower())  # Use regex to split words and make them lowercase
     for word in words:
-        if word not in stopwords:  # Remove stopwords from counting
+        if word not in stopwords: 
             word_counts[word] = word_counts.get(word, 0) + 1
 
-# Print repeated words and their counts
 print("\nRepeated words in translated titles:")
 for word, count in word_counts.items():
-    if count > 2:  # Only print words repeated more than twice
+    if count > 2:  
         print(f"{word}: {count}")
 
-# Step 5: Save Data to CSV (or JSON)
+# Save Data to CSV (or JSON)
 csv_file = os.path.join(output_dir, "elpais_opinion_articles.csv")
 with open(csv_file, mode="w", newline="", encoding="utf-8") as file:
     writer = csv.DictWriter(file, fieldnames=["article_number", "title_spanish", "title_english", "content"])
@@ -150,6 +148,6 @@ with open(csv_file, mode="w", newline="", encoding="utf-8") as file:
 
 print(f"Data saved to {csv_file}")
 
-# Close the WebDriver
 driver.quit()
 print("Scraping completed!")
+# Close the WebDriver
