@@ -34,7 +34,6 @@ def sanitize_text(text):
     for wrong, correct in replacements.items():
         normalized_text = normalized_text.replace(wrong, correct)
 
-    # Return the normalized, sanitized text
     return normalized_text
 
 
@@ -126,9 +125,9 @@ word_counts = {}
 stopwords = set([
     "the", "and", "to", "a", "of", "in", "is", "for", "on", "with", "this", "at", "by", "as", "an", "it", "are", "that", "from", "but"
 ])
-# Count word frequency
+
 for title in all_titles:
-    words = re.findall(r'\w+', title.lower())  # Use regex to split words and make them lowercase
+    words = re.findall(r'\w+', title.lower())
     for word in words:
         if word not in stopwords: 
             word_counts[word] = word_counts.get(word, 0) + 1
