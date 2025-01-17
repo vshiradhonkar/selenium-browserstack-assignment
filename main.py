@@ -12,8 +12,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
 
-BROWSERSTACK_USERNAME = 'vedantshiradhonk_g0msUx'  # Your BrowserStack username
-BROWSERSTACK_ACCESS_KEY = 'CrEL4joRsysd4zCqPezp'  # Your BrowserStack access key
+BROWSERSTACK_USERNAME = 'vedantshiradhonk_g0msUx'
+BROWSERSTACK_ACCESS_KEY = 'CrEL4joRsysd4zCqPezp'
 
 
 BROWSERSTACK_CAPABILITIES = {
@@ -43,7 +43,7 @@ def initialize_browserstack() -> webdriver.Remote:
     options = Options()
     options.add_argument('--disable-extensions')
     options.add_argument('--disable-gpu')
-    options.add_argument('--headless')  # if you want headless mode
+    options.add_argument('--headless') 
 
     driver = webdriver.Remote(
         command_executor=f'https://{BROWSERSTACK_USERNAME}:{BROWSERSTACK_ACCESS_KEY}@hub-cloud.browserstack.com/wd/hub',
